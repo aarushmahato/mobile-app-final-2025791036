@@ -1,0 +1,40 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+
+import '../models/meal.dart';
+
+class MealApi {
+  const MealApi();
+
+  Future<List<Meal>> searchByName(String query) async {
+    final name = query.trim();
+    if (name.isEmpty) return const [];
+
+    final uri = Uri.https('www.themealdb.com', '/api/json/v1/1/search.php', {
+      's': name,
+    });
+    final client = http.Client();
+    try {
+      final response = await client
+          .get(uri)
+          .timeout(const Duration(seconds: 15));
+      if (response.statusCode != 200) {
+        throw http.ClientException(
+          'TheMealDB returned ${response.statusCode}',
+          uri,
+        );
+      }
+
+      final data =
+          jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+      final meals = data['meals'] as List<dynamic>?;
+      if (meals == null) return const [];
+      return meals
+          .map((meal) => Meal.fromJson(meal as Map<String, dynamic>))
+          .toList();
+    } finally {
+      client.close();
+    }
+  }
+}

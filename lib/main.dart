@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'screens/search_screen.dart';
+
 void main() {
   runApp(const RecipeExplorerApp());
 }
@@ -13,22 +15,10 @@ class RecipeExplorerApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Recipe Explorer',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.orange,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Recipe Explorer'),
-        ),
-        body: const Center(
-          child: Text(
-            'Welcome to Recipe Explorer!',
-            style: TextStyle(fontSize: 22),
-          ),
-        ),
-      ),
+      home: const SearchScreen(),
     );
   }
 }
