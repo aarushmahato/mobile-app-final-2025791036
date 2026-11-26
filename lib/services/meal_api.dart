@@ -2,10 +2,20 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../models/category.dart';
 import '../models/meal.dart';
 
 class MealApi {
   const MealApi();
+
+  Future<List<Category>> fetchCategories() async {
+    final uri = Uri.https('www.themealdb.com', '/api/json/v1/1/categories.php');
+    final data = await _fetchJson(uri);
+    final categories = data['categories'] as List<dynamic>;
+    return categories
+        .map((category) => Category.fromJson(category as Map<String, dynamic>))
+        .toList();
+  }
 
   Future<List<Meal>> searchByName(String query) async {
     final name = query.trim();
@@ -14,6 +24,15 @@ class MealApi {
     final uri = Uri.https('www.themealdb.com', '/api/json/v1/1/search.php', {
       's': name,
     });
+    final data = await _fetchJson(uri);
+    final meals = data['meals'] as List<dynamic>?;
+    if (meals == null) return const [];
+    return meals
+        .map((meal) => Meal.fromJson(meal as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<Map<String, dynamic>> _fetchJson(Uri uri) async {
     final client = http.Client();
     try {
       final response = await client
@@ -26,13 +45,8 @@ class MealApi {
         );
       }
 
-      final data =
-          jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
-      final meals = data['meals'] as List<dynamic>?;
-      if (meals == null) return const [];
-      return meals
-          .map((meal) => Meal.fromJson(meal as Map<String, dynamic>))
-          .toList();
+      return jsonDecode(utf8.decode(response.bodyBytes))
+          as Map<String, dynamic>;
     } finally {
       client.close();
     }
