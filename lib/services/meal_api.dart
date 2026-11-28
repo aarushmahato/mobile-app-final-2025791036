@@ -34,6 +34,15 @@ class MealApi {
     return _fetchMeals(uri);
   }
 
+  Future<Meal?> fetchMealById(String id) async {
+    final uri = Uri.https('www.themealdb.com', '/api/json/v1/1/lookup.php', {
+      'i': id,
+    });
+    final meals = await _fetchMeals(uri);
+    if (meals.isEmpty) return null;
+    return meals.first;
+  }
+
   Future<List<Meal>> _fetchMeals(Uri uri) async {
     final data = await _fetchJson(uri);
     final meals = data['meals'] as List<dynamic>?;

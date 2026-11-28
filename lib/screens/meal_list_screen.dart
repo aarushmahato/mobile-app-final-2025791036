@@ -4,6 +4,7 @@ import '../models/category.dart';
 import '../models/meal.dart';
 import '../services/meal_api.dart';
 import '../widgets/meal_card.dart';
+import 'meal_detail_screen.dart';
 
 class MealListScreen extends StatefulWidget {
   const MealListScreen({super.key, required this.category});
@@ -83,7 +84,19 @@ class _MealListScreenState extends State<MealListScreen> {
       itemCount: _meals.length,
       itemBuilder: (context, index) {
         final meal = _meals[index];
-        return MealCard(key: ValueKey(meal.id), meal: meal);
+        return MealCard(
+          key: ValueKey(meal.id),
+          meal: meal,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (context) =>
+                    MealDetailScreen(meal: meal, loadDetails: true),
+              ),
+            );
+          },
+        );
       },
     );
   }

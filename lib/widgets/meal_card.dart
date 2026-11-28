@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import '../models/meal.dart';
 
 class MealCard extends StatelessWidget {
-  const MealCard({super.key, required this.meal});
+  const MealCard({super.key, required this.meal, this.onTap});
 
   final Meal meal;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +29,8 @@ class MealCard extends StatelessWidget {
       child: ListTile(
         leading: SizedBox.square(dimension: 48, child: thumbnail),
         title: Text(meal.name),
+        trailing: onTap == null ? null : const Icon(Icons.chevron_right),
+        onTap: onTap,
       ),
     );
   }
