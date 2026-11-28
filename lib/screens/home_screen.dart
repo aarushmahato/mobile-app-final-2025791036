@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/category.dart';
 import '../services/meal_api.dart';
+import 'meal_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -67,29 +68,41 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (context, index) {
                 final category = categories[index];
                 return Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: Image.network(
-                            category.imageUrl,
-                            fit: BoxFit.contain,
-                            excludeFromSemantics: true,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.restaurant_menu, size: 40),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) =>
+                              MealListScreen(category: category),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: Image.network(
+                              category.imageUrl,
+                              fit: BoxFit.contain,
+                              excludeFromSemantics: true,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.restaurant_menu, size: 40),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          category.name,
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          Text(
+                            category.name,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

@@ -1,5 +1,6 @@
 class Meal {
   const Meal({
+    required this.id,
     required this.name,
     required this.imageUrl,
     required this.instructions,
@@ -16,6 +17,7 @@ class Meal {
       }
     }
     return Meal(
+      id: json['idMeal'] as String,
       name: json['strMeal'] as String,
       imageUrl: json['strMealThumb'] as String?,
       instructions: (json['strInstructions'] as String?)?.trim() ?? '',
@@ -23,6 +25,7 @@ class Meal {
     );
   }
 
+  final String id;
   final String name;
   final String? imageUrl;
   final String instructions;

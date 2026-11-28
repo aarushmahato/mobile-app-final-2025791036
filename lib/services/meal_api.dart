@@ -24,6 +24,17 @@ class MealApi {
     final uri = Uri.https('www.themealdb.com', '/api/json/v1/1/search.php', {
       's': name,
     });
+    return _fetchMeals(uri);
+  }
+
+  Future<List<Meal>> fetchMealsByCategory(String category) {
+    final uri = Uri.https('www.themealdb.com', '/api/json/v1/1/filter.php', {
+      'c': category,
+    });
+    return _fetchMeals(uri);
+  }
+
+  Future<List<Meal>> _fetchMeals(Uri uri) async {
     final data = await _fetchJson(uri);
     final meals = data['meals'] as List<dynamic>?;
     if (meals == null) return const [];
