@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/meal.dart';
 import '../services/meal_api.dart';
+import 'home_screen.dart';
 import 'meal_detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -35,7 +36,18 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Recipe Explorer')),
+      appBar: AppBar(
+        title: const Text('Recipe Explorer'),
+        actions: [
+          IconButton(
+            tooltip: 'Browse categories',
+            icon: const Icon(Icons.grid_view),
+            onPressed: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute<void>(builder: (_) => const HomeScreen())),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
