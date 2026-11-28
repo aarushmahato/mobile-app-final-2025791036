@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/meal.dart';
+import '../services/favorites_storage.dart';
 import '../services/meal_api.dart';
 
 class MealDetailScreen extends StatefulWidget {
@@ -21,6 +22,9 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   Meal? _meal;
   bool _isLoading = false;
   bool _hasError = false;
+  final _favorites = FavoritesStorage();
+  bool? _isFavorite;
+  bool _updatingFavorite = false;
 
   @override
   void initState() {
@@ -30,6 +34,62 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
     } else {
       _meal = widget.meal;
     }
+    _loadFavorite();
+  }
+
+  Future<void> _loadFavorite() async {
+    setState(() {
+      _updatingFavorite = true;
+    });
+    try {
+      final ids = await _favorites.getFavoriteIds();
+      if (!mounted) return;
+      setState(() {
+        _isFavorite = ids.contains(widget.meal.id);
+      });
+    } catch (_) {
+      if (!mounted) return;
+      _showFavoriteMessage('Couldn’t read favorites. Tap the heart to retry.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _updatingFavorite = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _toggleFavorite() async {
+    final isFavorite = _isFavorite;
+    if (isFavorite == null) {
+      await _loadFavorite();
+      return;
+    }
+
+    setState(() {
+      _updatingFavorite = true;
+    });
+    try {
+      await _favorites.setFavorite(widget.meal.id, !isFavorite);
+      if (!mounted) return;
+      setState(() {
+        _isFavorite = !isFavorite;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      _showFavoriteMessage('Couldn’t update favorites. Try again.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _updatingFavorite = false;
+        });
+      }
+    }
+  }
+
+  void _showFavoriteMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _loadMeal() async {
@@ -57,7 +117,21 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.meal.name)),
+      appBar: AppBar(
+        title: Text(widget.meal.name),
+        actions: [
+          if (_meal != null)
+            IconButton(
+              onPressed: _updatingFavorite ? null : _toggleFavorite,
+              tooltip: _isFavorite == true
+                  ? 'Remove from favorites'
+                  : 'Add to favorites',
+              icon: Icon(
+                _isFavorite == true ? Icons.favorite : Icons.favorite_border,
+              ),
+            ),
+        ],
+      ),
       body: SafeArea(child: _buildBody()),
     );
   }
