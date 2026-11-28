@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Categories')),
+      appBar: AppBar(title: const Text('Recipe Explorer')),
       body: SafeArea(
         child: FutureBuilder<List<Category>>(
           future: _categories,
